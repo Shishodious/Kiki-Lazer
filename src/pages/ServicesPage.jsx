@@ -104,7 +104,7 @@ export default function ServicesPage() {
         <section className="sp-hero">
           <div className="sp-hero-bg">
             <img
-              src="https://images.unsplash.com/photo-1560750588-73207b1ef5b8?auto=format&fit=crop&w=2000&q=80"
+              src="https://images.unsplash.com/photo-1583417267826-aebc4d1542e1?q=80&w=2070&auto=format&fit=crop"
               alt="Kiki's Laser Spa treatment room"
             />
           </div>
@@ -125,6 +125,10 @@ export default function ServicesPage() {
         </section>
 
         <section className="sp-grid-section">
+          <div className="sp-blob-right" aria-hidden="true" />
+          <div className="sp-blob-right sp-blob-right-2" aria-hidden="true" />
+          <div className="sp-blob-left" aria-hidden="true" />
+          <div className="sp-blob-left sp-blob-left-2" aria-hidden="true" />
           <div className="sp-grid">
             {allServices.map((svc) => (
               <article key={svc.index} className="sp-card">

@@ -46,6 +46,38 @@ function FaqItem({ q, a }) {
 
 export default function ContactPage() {
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    const formData = {
+      name: document.getElementById("cf-name").value,
+      email: document.getElementById("cf-email").value,
+      phone: document.getElementById("cf-phone").value,
+      service: document.getElementById("cf-service").value,
+      message: document.getElementById("cf-msg").value,
+    };
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      
+      if (res.ok) {
+        setSent(true);
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      alert("Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="site-shell">
@@ -122,7 +154,7 @@ export default function ContactPage() {
             ) : (
               <form
                 className="cp-aura-form"
-                onSubmit={(e) => { e.preventDefault(); setSent(true); }}
+                onSubmit={handleSubmit}
               >
                 <div className="cp-aura-field-row">
                   <div className="cp-aura-field">

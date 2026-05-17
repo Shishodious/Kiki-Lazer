@@ -1,119 +1,109 @@
-const infoLinks = ["About Kiki's", "Reserve", "Gift a Session", "Membership"];
+import { Link } from "react-router-dom";
+import FooterParticles from "./FooterParticles";
+
+const navLinks = [
+  { label: "About Kiki's", to: "/about" },
+  { label: "Services", to: "/services" },
+  { label: "Contact", to: "/contact" },
+];
 
 const treatmentLinks = [
   "Laser Hair Reduction",
   "Skin Rejuvenation",
   "Pigmentation Correction",
-  "Facial Treatments",
+  "Acne Treatment",
+  "Tattoo Removal",
 ];
-
-const contactItems = [
-  "@kikislaserspa",
-  "516-320-9464",
-  "hello@kikislaserspa.com",
-  "By appointment, 10 AM – 8 PM",
-];
-
-const legalLinks = ["Privacy Policy", "Cookies", "FAQs"];
 
 export default function Footer() {
   return (
     <footer className="footer">
-      <div className="footer-location-strip">
-        <div className="footer-location-img-wrap">
-          <img
-            src="/assets/kiki-exterior.jpg"
-            alt="Kiki's Laser Spa exterior — Vails Mills, NY"
-          />
-        </div>
-        <div className="footer-location-copy">
-          <span className="footer-location-label">Find Us</span>
-          <p className="footer-location-address">Vails Mills, NY</p>
-          <a
-            className="footer-location-phone"
-            href="tel:5163209464"
-          >
-            516-320-9464
-          </a>
-        </div>
-        <div className="footer-location-logo-wrap">
-          <img
-            src="/assets/kiki-logo-glass.jpg"
-            alt="Kiki's Laser Spa branded logo"
-          />
-        </div>
-      </div>
 
-      <div className="footer-top">
-        <div className="footer-cta">
-          <h2 className="footer-heading">Let&apos;s Talk.</h2>
-          <p>
-            Questions or ready to book? Reach out and we&apos;ll get back to
-            you.
+      {/* ── Interactive particle field ── */}
+      <FooterParticles />
+
+      {/* ── Brand + CTA bar ── */}
+      <div className="footer-brand-row">
+        <div className="footer-brand-left">
+          <div className="footer-brand-mark">
+            <span className="footer-brand-script">Kiki&apos;s</span>
+            <span className="footer-brand-stack">
+              <span>Laser</span>
+              <span>Spa</span>
+            </span>
+          </div>
+          <p className="footer-brand-tagline">
+            Clinical precision. Soft luxury.<br />Vails Mills, NY.
           </p>
-          <button type="button" className="footer-btn">
-            Contact Us
-          </button>
         </div>
+        <div className="footer-brand-right">
+          <p className="footer-cta-label">Ready to start your skin journey?</p>
+          <Link to="/contact" className="footer-cta-btn">
+            Get in touch <span className="footer-cta-arrow">→</span>
+          </Link>
+        </div>
+      </div>
 
+      {/* ── Divider ── */}
+      <div className="footer-rule" />
+
+      {/* ── Link columns ── */}
+      <div className="footer-cols">
         <div className="footer-col">
-          <h3>Information</h3>
+          <h4 className="footer-col-heading">Navigate</h4>
           <ul>
-            {infoLinks.map((link) => (
-              <li key={link}>
-                <a href="/" onClick={(e) => e.preventDefault()}>
-                  {link}
-                </a>
-              </li>
+            {navLinks.map(({ label, to }) => (
+              <li key={to}><Link to={to}>{label}</Link></li>
             ))}
           </ul>
         </div>
 
         <div className="footer-col">
-          <h3>Treatments</h3>
+          <h4 className="footer-col-heading">Treatments</h4>
           <ul>
-            {treatmentLinks.map((link) => (
-              <li key={link}>
-                <a href="/" onClick={(e) => e.preventDefault()}>
-                  {link}
-                </a>
-              </li>
+            {treatmentLinks.map((t) => (
+              <li key={t}><Link to="/services">{t}</Link></li>
             ))}
           </ul>
         </div>
 
         <div className="footer-col">
-          <h3>Contact</h3>
+          <h4 className="footer-col-heading">Contact</h4>
           <ul>
-            {contactItems.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
+            <li><a href="mailto:hello@kikislaserspa.com">hello@kikislaserspa.com</a></li>
+            <li><a href="tel:5163209464">516-320-9464</a></li>
+            <li>Vails Mills, NY</li>
+            <li>Mon – Sun · 10 AM – 8 PM</li>
+          </ul>
+        </div>
+
+        <div className="footer-col">
+          <h4 className="footer-col-heading">Follow</h4>
+          <ul>
+            <li>
+              <a
+                href="https://instagram.com/kikislaserspa"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Instagram
+              </a>
+            </li>
           </ul>
         </div>
       </div>
 
+      {/* ── Bottom bar ── */}
+      <div className="footer-rule" />
       <div className="footer-bottom">
-        <div className="footer-bottom-left">
-          <a
-            className="footer-logo"
-            href="/"
-            onClick={(e) => e.preventDefault()}
-          >
-            Kiki&apos;s Laser Spa
-          </a>
-          <span className="footer-copy">
-            ©2025 Kiki&apos;s Laser Spa · Design by Hypeliv
-          </span>
-        </div>
-
+        <span className="footer-copy">©2025 Kiki&apos;s Laser Spa · Design by Hypeliv</span>
         <nav className="footer-legal">
-          {legalLinks.map((link) => (
-            <a key={link} href="/" onClick={(e) => e.preventDefault()}>
-              {link}
-            </a>
-          ))}
+          <a href="/">Privacy Policy</a>
+          <a href="/">Cookies</a>
+          <a href="/">FAQs</a>
         </nav>
       </div>
+
     </footer>
   );
 }

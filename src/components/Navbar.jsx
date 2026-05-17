@@ -3,7 +3,6 @@ import { Link, NavLink } from "react-router-dom";
 
 const menuItems = [
   { label: "About Kiki's", to: "/about" },
-  { label: "Treatments", to: "/treatments" },
   { label: "Services", to: "/services" },
   { label: "Contact", to: "/contact" },
 ];

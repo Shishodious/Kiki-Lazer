@@ -3,21 +3,45 @@ import { useState, useEffect, useRef } from "react";
 const testimonials = [
   {
     quote:
-      "The whole experience felt calm and professional. My treatment plan was explained clearly and the results started showing sooner than I expected.",
-    name: "Aarushi Mehta",
-    detail: "Laser Hair Reduction Client",
+      "Five stars for Kiki's Laser Spa! I'm doing treatments for my underarms and bikini area, and I'm already seeing incredible results. It feels so good to finally ditch the razor. If you're looking for professional laser hair removal in Upstate NY, look no further!",
+    name: "Verified Client",
+    detail: "Laser Hair Removal · Google Review",
   },
   {
     quote:
-      "Kiki's doesn't feel intimidating like a clinic. It feels warm, polished, and extremely detail-oriented from consultation to aftercare.",
-    name: "Riya Kapoor",
-    detail: "Skin Rejuvenation Client",
+      "I rarely post but sometimes you just need a little pampering. Kiki fixed me right up with kindness and the sweetest smile. Give Kiki a call — you won't be disappointed.",
+    name: "Deb",
+    detail: "Verified Google Review",
   },
   {
     quote:
-      "I came in worried about pigmentation and left with a plan that actually felt tailored to my skin instead of generic advice.",
-    name: "Naina Shah",
-    detail: "Pigmentation Correction Client",
+      "Kiki is wonderful! She is warm and welcoming, explains everything ahead of and during treatment. Kiki is affordable and has changed my morning routine forever. No more unwanted hair!",
+    name: "Verified Client",
+    detail: "Laser Hair Removal · Google Review",
+  },
+  {
+    quote:
+      "Kiki is very knowledgeable and walks you through the laser procedure. I have been very pleased with all my treatments and will continue to recommend her to all my friends and family.",
+    name: "Verified Client",
+    detail: "Verified Google Review",
+  },
+  {
+    quote:
+      "She's kind, sweet, the establishment is clean, and her pricing is fair. Kiki called to check that I felt okay after — you don't get that at a lot of places. Do yourself a favor and try her out. You won't regret it!",
+    name: "Verified Client",
+    detail: "Verified Google Review",
+  },
+  {
+    quote:
+      "Had a great experience — I was nervous and she made me feel so comfortable. I will be back! Thank you Kiki.",
+    name: "Verified Client",
+    detail: "Verified Google Review",
+  },
+  {
+    quote:
+      "Would highly recommend. Kiki does great work, is flexible with her schedule and calls to check on you after.",
+    name: "Verified Client",
+    detail: "Verified Google Review",
   },
 ];
 

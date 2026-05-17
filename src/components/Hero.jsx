@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 export default function Hero() {
+  const navigate = useNavigate();
   return (
     <section className="hero">
       <video className="hero-video" autoPlay muted loop playsInline>
@@ -23,7 +26,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <button className="hero-orbit-cta" type="button">
+      <button className="hero-orbit-cta" type="button" onClick={() => navigate("/contact")}>
         <span>Reserve</span>
       </button>
     </section>
