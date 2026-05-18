@@ -48,9 +48,12 @@ export default function ContactPage() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [error, setError] = useState(null);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     
     const formData = {
       name: document.getElementById("cf-name").value,
@@ -70,10 +73,11 @@ export default function ContactPage() {
       if (res.ok) {
         setSent(true);
       } else {
-        alert("Something went wrong. Please try again.");
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "Something went wrong. Please try again.");
       }
     } catch (err) {
-      alert("Failed to send message. Please try again.");
+      setError("Failed to send message. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -152,7 +156,13 @@ export default function ContactPage() {
                 <p>We&apos;ll be in touch within one business day. Thank you for reaching out to Kiki&apos;s.</p>
               </div>
             ) : (
-              <form
+              <>
+                {error && (
+                  <div className="cp-error" style={{ marginBottom: "1rem", color: "#c0392b", fontSize: "0.95rem" }}>
+                    {error}
+                  </div>
+                )}
+                <form
                 className="cp-aura-form"
                 onSubmit={handleSubmit}
               >
@@ -201,6 +211,7 @@ export default function ContactPage() {
                   Send message <span className="cp-aura-arrow">→</span>
                 </button>
               </form>
+              </>
             )}
           </div>
         </section>

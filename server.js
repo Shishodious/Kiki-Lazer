@@ -2,9 +2,14 @@ import express from "express";
 import cors from "cors";
 import { Resend } from "resend";
 import "dotenv/config";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-// const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -41,11 +46,14 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-// app.listen(PORT, () => {
-//   console.log(`Server running on http://localhost:${PORT}`);
-// });
-const PORT = process.env.PORT || 8080;
+// Serve static files from the dist folder
+app.use(express.static(path.join(__dirname, "dist")));
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+// SPA fallback: serve index.html for any non-API route
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
