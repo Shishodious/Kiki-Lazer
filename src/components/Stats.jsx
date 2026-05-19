@@ -1,13 +1,11 @@
-const stats = [
-  { value: "2,400+", label: "Treatment Sessions" },
-  { value: "12+", label: "Certified Experts" },
-  { value: "2018", label: "Founded In" },
-];
+import { useSiteContent } from "../context/SiteContentContext";
 
 export default function Stats() {
+  const { homePage } = useSiteContent();
+
   return (
     <section className="stats">
-      {stats.map(({ value, label }) => (
+      {homePage.stats.map(({ value, label }) => (
         <article key={label}>
           <strong>{value}</strong>
           <span>{label}</span>

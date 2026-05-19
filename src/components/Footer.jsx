@@ -1,109 +1,115 @@
 import { Link } from "react-router-dom";
 import FooterParticles from "./FooterParticles";
+import { useSiteContent } from "../context/SiteContentContext";
 
-const navLinks = [
-  { label: "About Kiki's", to: "/about" },
-  { label: "Services", to: "/services" },
-  { label: "Contact", to: "/contact" },
-];
+function renderLines(value) {
+  return value.split("\n").map((line, index) => (
+    <span key={`${line}-${index}`}>
+      {index > 0 ? <br /> : null}
+      {line}
+    </span>
+  ));
+}
 
-const treatmentLinks = [
-  "Laser Hair Reduction",
-  "Skin Rejuvenation",
-  "Pigmentation Correction",
-  "Acne Treatment",
-  "Tattoo Removal",
-];
+function isExternalHref(href) {
+  return /^https?:\/\//.test(href) || href.startsWith("mailto:") || href.startsWith("tel:");
+}
+
+function FooterLink({ href, children }) {
+  if (isExternalHref(href)) {
+    return (
+      <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}>
+        {children}
+      </a>
+    );
+  }
+
+  return <Link to={href}>{children}</Link>;
+}
 
 export default function Footer() {
+  const { sharedSettings, contactDetails, footerContent } = useSiteContent();
+  const { brand } = sharedSettings;
+
   return (
     <footer className="footer">
-
-      {/* ── Interactive particle field ── */}
       <FooterParticles />
 
-      {/* ── Brand + CTA bar ── */}
       <div className="footer-brand-row">
         <div className="footer-brand-left">
           <div className="footer-brand-mark">
-            <span className="footer-brand-script">Kiki&apos;s</span>
+            <span className="footer-brand-script">{brand.scriptLabel}</span>
             <span className="footer-brand-stack">
-              <span>Laser</span>
-              <span>Spa</span>
+              <span>{brand.stackTop}</span>
+              <span>{brand.stackBottom}</span>
             </span>
           </div>
-          <p className="footer-brand-tagline">
-            Clinical precision. Soft luxury.<br />Vails Mills, NY.
-          </p>
+          <p className="footer-brand-tagline">{renderLines(footerContent.tagline)}</p>
         </div>
         <div className="footer-brand-right">
-          <p className="footer-cta-label">Ready to start your skin journey?</p>
+          <p className="footer-cta-label">{footerContent.ctaLabel}</p>
           <Link to="/contact" className="footer-cta-btn">
             Get in touch <span className="footer-cta-arrow">→</span>
           </Link>
         </div>
       </div>
 
-      {/* ── Divider ── */}
       <div className="footer-rule" />
 
-      {/* ── Link columns ── */}
       <div className="footer-cols">
         <div className="footer-col">
-          <h4 className="footer-col-heading">Navigate</h4>
+          <h4 className="footer-col-heading">{footerContent.navigateHeading}</h4>
           <ul>
-            {navLinks.map(({ label, to }) => (
-              <li key={to}><Link to={to}>{label}</Link></li>
+            {footerContent.navigationLinks.map(({ label, href }) => (
+              <li key={`${label}-${href}`}><FooterLink href={href}>{label}</FooterLink></li>
             ))}
           </ul>
         </div>
 
         <div className="footer-col">
-          <h4 className="footer-col-heading">Treatments</h4>
+          <h4 className="footer-col-heading">{footerContent.treatmentsHeading}</h4>
           <ul>
-            {treatmentLinks.map((t) => (
-              <li key={t}><Link to="/services">{t}</Link></li>
+            {footerContent.treatmentLinks.map(({ label, href }) => (
+              <li key={`${label}-${href}`}><FooterLink href={href}>{label}</FooterLink></li>
             ))}
           </ul>
         </div>
 
         <div className="footer-col">
-          <h4 className="footer-col-heading">Contact</h4>
+          <h4 className="footer-col-heading">{footerContent.contactHeading}</h4>
           <ul>
-            <li><a href="mailto:hello@kikislaserspa.com">hello@kikislaserspa.com</a></li>
-            <li><a href="tel:5163209464">516-320-9464</a></li>
-            <li>Vails Mills, NY</li>
-            <li>Mon – Sun · 10 AM – 8 PM</li>
+            <li><a href={`mailto:${contactDetails.email}`}>{contactDetails.email}</a></li>
+            <li><a href={`tel:${(contactDetails.phone || "").replace(/[^+\d]/g, "")}`}>{contactDetails.phone}</a></li>
+            <li>{contactDetails.location}</li>
+            <li>{renderLines(contactDetails.hours)}</li>
           </ul>
         </div>
 
         <div className="footer-col">
-          <h4 className="footer-col-heading">Follow</h4>
+          <h4 className="footer-col-heading">{footerContent.followHeading}</h4>
           <ul>
             <li>
               <a
-                href="https://instagram.com/kikislaserspa"
+                href={contactDetails.socialUrl}
                 target="_blank"
                 rel="noreferrer"
               >
-                Instagram
+                {contactDetails.socialLabel}
               </a>
             </li>
           </ul>
         </div>
       </div>
 
-      {/* ── Bottom bar ── */}
       <div className="footer-rule" />
       <div className="footer-bottom">
-        <span className="footer-copy">©2025 Kiki&apos;s Laser Spa · Design by Hypeliv</span>
+        <span className="footer-copy">{footerContent.copyright}</span>
         <nav className="footer-legal">
-          <a href="/">Privacy Policy</a>
-          <a href="/">Cookies</a>
-          <a href="/">FAQs</a>
+          {footerContent.legalLinks.map(({ label, href }) => (
+            <FooterLink key={`${label}-${href}`} href={href}>{label}</FooterLink>
+          ))}
         </nav>
       </div>
-
     </footer>
   );
 }

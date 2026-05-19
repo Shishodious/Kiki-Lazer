@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useSiteContent } from "../context/SiteContentContext";
 
 const menuItems = [
   { label: "About Kiki's", to: "/about" },
@@ -10,6 +11,8 @@ const menuItems = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { sharedSettings } = useSiteContent();
+  const { brand } = sharedSettings;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -23,16 +26,16 @@ export default function Navbar() {
     <>
       <header className={`topbar${solidNav ? " is-scrolled" : ""}${menuOpen ? " menu-is-open" : ""}`}>
         <Link className="brand" to="/">
-          <span className="brand-script">Kiki&apos;s</span>
+          <span className="brand-script">{brand.scriptLabel}</span>
           <span className="brand-stack">
-            <span>Laser</span>
-            <span>Spa</span>
+            <span>{brand.stackTop}</span>
+            <span>{brand.stackBottom}</span>
           </span>
         </Link>
 
         <div className="topbar-actions">
           <Link className="reserve-pill" to="/contact">
-            Reserve
+            {brand.reserveLabel}
           </Link>
           <span className="topbar-divider" aria-hidden="true" />
           <button
