@@ -129,6 +129,9 @@ export default function ContactPage() {
               </div>
             ) : (
               <>
+                <div className="cp-form-intro">
+                  <h2 className="cp-form-title">Reach Out</h2>
+                </div>
                 {error ? (
                   <div className="cp-error" style={{ marginBottom: "1rem", color: "#c0392b", fontSize: "0.95rem" }}>
                     {error}
@@ -179,6 +182,7 @@ export default function ContactPage() {
         </section>
 
         <section className="cp-faq-section">
+          <div className="cp-faq-blob" aria-hidden="true" />
           <div className="cp-faq-inner">
             <div className="cp-faq-header">
               <span className="cp-eyebrow">{contactPage.faqEyebrow}</span>

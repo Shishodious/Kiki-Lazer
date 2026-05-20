@@ -10,6 +10,7 @@ export default function FooterParticles() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     const footer = canvas.parentElement;
+    const autoDrift = window.matchMedia("(hover: none)").matches;
 
     const initParticles = () => {
       const count = Math.floor((canvas.width * canvas.height) / 5000);
@@ -25,6 +26,13 @@ export default function FooterParticles() {
           vy: 0,
           size: Math.random() * 2.4 + 1.2,
           opacity: Math.random() * 0.45 + 0.25,
+          // Per-particle drift signature so each sphere wanders independently
+          phaseX: Math.random() * Math.PI * 2,
+          phaseY: Math.random() * Math.PI * 2,
+          freqX: 0.12 + Math.random() * 0.28,
+          freqY: 0.12 + Math.random() * 0.28,
+          ampX: 8 + Math.random() * 22,
+          ampY: 8 + Math.random() * 22,
         };
       });
     };
@@ -55,6 +63,7 @@ export default function FooterParticles() {
       const REPEL_STRENGTH = 6;
       const SPRING = 0.048;
       const FRICTION = 0.88;
+      const t = autoDrift ? performance.now() / 1000 : 0;
 
       ctx.shadowBlur = 10;
 
@@ -69,8 +78,15 @@ export default function FooterParticles() {
           p.vy -= (dy / dist) * force;
         }
 
-        p.vx += (p.homeX - p.x) * SPRING;
-        p.vy += (p.homeY - p.y) * SPRING;
+        const targetX = autoDrift
+          ? p.homeX + Math.sin(t * p.freqX + p.phaseX) * p.ampX
+          : p.homeX;
+        const targetY = autoDrift
+          ? p.homeY + Math.cos(t * p.freqY + p.phaseY) * p.ampY
+          : p.homeY;
+
+        p.vx += (targetX - p.x) * SPRING;
+        p.vy += (targetY - p.y) * SPRING;
         p.vx *= FRICTION;
         p.vy *= FRICTION;
         p.x += p.vx;
@@ -91,15 +107,19 @@ export default function FooterParticles() {
     };
 
     resize();
-    footer.addEventListener("mousemove", onMouseMove);
-    footer.addEventListener("mouseleave", onMouseLeave);
+    if (!autoDrift) {
+      footer.addEventListener("mousemove", onMouseMove);
+      footer.addEventListener("mouseleave", onMouseLeave);
+    }
     window.addEventListener("resize", resize);
     animate();
 
     return () => {
       cancelAnimationFrame(rafRef.current);
-      footer.removeEventListener("mousemove", onMouseMove);
-      footer.removeEventListener("mouseleave", onMouseLeave);
+      if (!autoDrift) {
+        footer.removeEventListener("mousemove", onMouseMove);
+        footer.removeEventListener("mouseleave", onMouseLeave);
+      }
       window.removeEventListener("resize", resize);
     };
   }, []);

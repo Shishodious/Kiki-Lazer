@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { fallbackContent } from "../lib/fallbackContent";
-import { isSanityEnabled, sanityClient } from "../lib/sanity";
+import { isSanityEnabled, sanityClient, sanityConfig } from "../lib/sanity";
 
 const SITE_CONTENT_QUERY = `{
   "sharedSettings": *[_type == "sharedSettings"][0],
@@ -130,6 +130,7 @@ export function SiteContentProvider({ children }) {
         }
       } catch (error) {
         if (!cancelled) {
+          console.error("[Sanity] Content fetch failed — using fallback content. Likely cause: CORS origin not whitelisted. Add the current origin at https://www.sanity.io/manage/project/" + sanityConfig.projectId + "/api", error);
           setContent(fallbackContent);
         }
       } finally {
