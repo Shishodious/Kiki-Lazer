@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import BlurHashImage from "../components/BlurHashImage";
@@ -83,9 +84,9 @@ export default function AboutPage() {
           <div className="ap-cta-inner">
             <span className="ap-eyebrow">{aboutPage.ctaEyebrow}</span>
             <h2 className="ap-cta-heading">{aboutPage.ctaHeading}</h2>
-            <a href="/contact" className="ap-cta-btn">
+            <Link to="/contact" className="ap-cta-btn">
               {aboutPage.ctaLabel} <span className="ap-cta-arrow">→</span>
-            </a>
+            </Link>
           </div>
         </section>
 
