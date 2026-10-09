@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useSiteContent } from "../context/SiteContentContext";
+import BrandScript from "./BrandScript";
 
 const menuItems = [
   { label: "About Kiki's", to: "/about" },
@@ -26,7 +27,7 @@ export default function Navbar() {
     <>
       <header className={`topbar${solidNav ? " is-scrolled" : ""}${menuOpen ? " menu-is-open" : ""}`}>
         <Link className="brand" to="/">
-          <span className="brand-script">{brand.scriptLabel}</span>
+          <BrandScript className="brand-script" label={brand.scriptLabel} />
           <span className="brand-stack">
             <span>{brand.stackTop}</span>
             <span>{brand.stackBottom}</span>

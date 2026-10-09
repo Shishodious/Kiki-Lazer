@@ -31,16 +31,20 @@ function FaqItem({ question, answer }) {
   );
 }
 
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export default function ContactPage() {
   const { contactDetails, contactPage } = useSiteContent();
-  const [sent, setSent] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // idle → sending (form folds into a ticking square) → done (square shows a tick) → sent (confirmation unfolds)
+  const [phase, setPhase] = useState("idle");
   const [error, setError] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setLoading(true);
+    setPhase("sending");
     setError(null);
+    // Let the fold finish and tick for a beat even when the request returns instantly
+    const foldTime = wait(1300);
 
     const formData = {
       name: document.getElementById("cf-name").value,
@@ -58,15 +62,20 @@ export default function ContactPage() {
       });
 
       if (response.ok) {
-        setSent(true);
+        await foldTime;
+        setPhase("done");
+        await wait(700);
+        setPhase("sent");
       } else {
         const data = await response.json().catch(() => ({}));
+        await foldTime;
         setError(data.error || "Something went wrong. Please try again.");
+        setPhase("idle");
       }
     } catch (submitError) {
+      await foldTime;
       setError("Failed to send message. Please check your connection and try again.");
-    } finally {
-      setLoading(false);
+      setPhase("idle");
     }
   };
 
@@ -121,19 +130,19 @@ export default function ContactPage() {
           </div>
 
           <div className="cp-aura-right">
-            {sent ? (
-              <div className="cp-success">
-                <span className="cp-success-icon">✓</span>
-                <h3>{contactPage.successTitle}</h3>
-                <p>{contactPage.successBody}</p>
-              </div>
-            ) : (
-              <>
+            <div className={`cp-fold is-${phase}`}>
+              {/* The form stays mounted (just hidden) while sending so the column keeps its height
+                  and the fields keep their values if the send fails. */}
+              <div className="cp-fold-content" inert={phase !== "idle" ? "" : undefined}>
                 <div className="cp-form-intro">
                   <h2 className="cp-form-title">Reach Out</h2>
                 </div>
                 {error ? (
-                  <div className="cp-error" style={{ marginBottom: "1rem", color: "#c0392b", fontSize: "0.95rem" }}>
+                  <div
+                    className="cp-error"
+                    role="alert"
+                    style={{ marginBottom: "1rem", color: "#c0392b", fontSize: "0.95rem" }}
+                  >
                     {error}
                   </div>
                 ) : null}
@@ -172,12 +181,37 @@ export default function ContactPage() {
                       required
                     />
                   </div>
-                  <button type="submit" className="cp-aura-submit" disabled={loading}>
-                    {loading ? "Sending..." : "Send message"} <span className="cp-aura-arrow">→</span>
+                  <button type="submit" className="cp-aura-submit" disabled={phase !== "idle"}>
+                    Send message <span className="cp-aura-arrow">→</span>
                   </button>
                 </form>
-              </>
-            )}
+              </div>
+
+              <div className="cp-fold-sheet" aria-hidden="true">
+                <div className="cp-fold-square">
+                  <svg className="cp-fold-ticks" viewBox="0 0 48 48">
+                    {Array.from({ length: 12 }, (_, i) => (
+                      <line key={i} x1="24" y1="6" x2="24" y2="11" transform={`rotate(${i * 30} 24 24)`} style={{ "--i": i }} />
+                    ))}
+                  </svg>
+                  <svg className="cp-fold-check" viewBox="0 0 48 48">
+                    <path d="M15 25 l6 6 l12 -13" />
+                  </svg>
+                </div>
+              </div>
+
+              <p className="cp-fold-status" role="status">
+                {phase === "sending" ? "Sending your message…" : phase === "idle" ? "" : "Message sent"}
+              </p>
+
+              {phase === "sent" ? (
+                <div className="cp-success">
+                  <span className="cp-success-icon">✓</span>
+                  <h3>{contactPage.successTitle}</h3>
+                  <p>{contactPage.successBody}</p>
+                </div>
+              ) : null}
+            </div>
           </div>
         </section>
 

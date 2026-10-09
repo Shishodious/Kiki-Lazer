@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import FooterParticles from "./FooterParticles";
+import BrandScript from "./BrandScript";
 import { useSiteContent } from "../context/SiteContentContext";
 
 function renderLines(value) {
@@ -38,7 +39,7 @@ export default function Footer() {
       <div className="footer-brand-row">
         <div className="footer-brand-left">
           <div className="footer-brand-mark">
-            <span className="footer-brand-script">{brand.scriptLabel}</span>
+            <BrandScript className="footer-brand-script" label={brand.scriptLabel} />
             <span className="footer-brand-stack">
               <span>{brand.stackTop}</span>
               <span>{brand.stackBottom}</span>

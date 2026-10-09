@@ -150,6 +150,16 @@ a {
   font-style: italic;
 }
 
+/* Logo mark standing in for the "K" of the script wordmark (navbar, footer, loader) */
+.brand-k {
+  display: inline-block;
+  height: 1.2em;
+  width: auto;
+  aspect-ratio: 317 / 320;
+  margin-right: -0.04em;
+  vertical-align: -0.22em;
+}
+
 .brand-stack {
   display: flex;
   flex-direction: column;
@@ -1220,7 +1230,13 @@ a {
   margin: 32px 32px 0;
 }
 
+/* Collapsing stack: cards share one grid cell. Each card behind the front one is scaled
+   down from its bottom edge and lifted so only a 12px sliver shows above the front card;
+   clip-path trims the rest so the glass layers never overlap. */
 .testimonial-card {
+  --depth: 0;
+  --s: calc(1 - var(--depth) * 0.05);
+  --rx: 0deg;
   grid-area: 1 / 1;
   padding: 32px 32px 28px;
   border-radius: 22px;
@@ -1228,16 +1244,70 @@ a {
   border: 1px solid rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  transform-origin: 50% 100%;
+  transform: perspective(1200px)
+    translateY(calc((var(--s) - 1) * 100% - var(--depth) * 12px))
+    rotateX(var(--rx))
+    scale(var(--s));
+  clip-path: inset(0 0 calc(100% - 12px / var(--s)) 0);
   opacity: 0;
-  transform: translateY(16px);
   pointer-events: none;
-  transition: opacity 500ms ease, transform 500ms ease;
+  transition:
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    clip-path 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 500ms ease;
+}
+
+.testimonial-card > * {
+  opacity: 0;
+  transition: opacity 250ms ease;
 }
 
 .testimonial-card.is-active {
+  clip-path: inset(0 0 0 0);
   opacity: 1;
-  transform: translateY(0);
   pointer-events: auto;
+  transition:
+    transform 650ms cubic-bezier(0.65, 0, 0.35, 1) 90ms,
+    clip-path 650ms cubic-bezier(0.65, 0, 0.35, 1) 90ms,
+    opacity 400ms ease 90ms;
+}
+
+.testimonial-card.is-active > * {
+  opacity: 1;
+  transition: opacity 450ms ease 260ms;
+}
+
+.testimonial-card.is-peeking {
+  opacity: calc(1 - var(--depth) * 0.3);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* The card just passed folds down on its bottom hinge (top edge tipping away) and fades,
+   uncovering the next card as it unfolds from its sliver. */
+.testimonial-card.is-leaving {
+  --rx: 84deg;
+  clip-path: inset(0 0 0 0);
+  transition:
+    transform 620ms cubic-bezier(0.4, 0, 0.6, 1),
+    clip-path 0ms,
+    opacity 300ms ease 320ms;
+}
+
+.testimonial-card.is-leaving > * {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .testimonial-card,
+  .testimonial-card.is-leaving {
+    transition: opacity 250ms ease;
+  }
+
+  .testimonial-card.is-leaving {
+    --rx: 0deg;
+  }
 }
 
 /* Carousel navigation */
@@ -3627,13 +3697,71 @@ a.cp-info-value:hover {
   flex-direction: column;
   align-items: center;
   gap: 28px;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: loaderFadeIn 500ms ease 150ms forwards;
 }
 
 @keyframes loaderFadeIn {
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Intro: the logo mark opens too close to read — centred and filling the screen — then pulls
+   back into the wordmark, overshoots, and rocks to rest. Loader.jsx sets the --pull-* vars. */
+.loader-script .brand-k {
+  opacity: 0;
+}
+
+.loader-overlay:not(.loader-waiting) .loader-script .brand-k {
+  animation: loaderPullBack 1250ms both;
+}
+
+@keyframes loaderPullBack {
+  0% {
+    opacity: 0;
+    transform: translate(var(--pull-x, 0px), var(--pull-y, 0px)) scale(var(--pull-scale, 10)) rotate(-10deg);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.2, 1);
+  }
+  12% { opacity: 0.45; }
+  60% {
+    opacity: 1;
+    transform: translate(0, 0) scale(0.86) rotate(4deg);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.3, 1);
+  }
+  78% { transform: translate(0, 0) scale(1.05) rotate(-2deg); }
+  90% { transform: translate(0, 0) scale(0.985) rotate(0.8deg); }
+  100% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0deg); }
+}
+
+/* The rest of the wordmark arrives once the mark has landed */
+.loader-overlay .loader-script {
+  color: rgba(255, 255, 255, 0);
+}
+
+.loader-overlay:not(.loader-waiting) .loader-script {
+  animation: loaderScriptIn 500ms ease 780ms both;
+}
+
+@keyframes loaderScriptIn {
+  to { color: #fff; }
+}
+
+.loader-stack,
+.loader-bar,
+.loader-tagline {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.loader-overlay:not(.loader-waiting) .loader-stack { animation: loaderFadeIn 450ms ease 880ms both; }
+.loader-overlay:not(.loader-waiting) .loader-bar { animation: loaderFadeIn 450ms ease 960ms both; }
+.loader-overlay:not(.loader-waiting) .loader-tagline { animation: loaderFadeIn 450ms ease 1040ms both; }
+
+@keyframes loaderMarkFade {
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-overlay:not(.loader-waiting) .loader-script .brand-k {
+    animation: loaderMarkFade 400ms ease both;
+  }
 }
 
 /* Brand mark */
@@ -3678,7 +3806,10 @@ a.cp-info-value:hover {
   background: linear-gradient(90deg, #c4a0e8, #fff);
   border-radius: 999px;
   width: 0;
-  animation: loaderBarFill 1200ms ease 200ms forwards;
+}
+
+.loader-overlay:not(.loader-waiting) .loader-bar-fill {
+  animation: loaderBarFill 900ms ease 1000ms forwards;
 }
 
 @keyframes loaderBarFill {
@@ -3984,6 +4115,172 @@ a.cp-aura-info-val:hover {
   max-width: 380px;
   line-height: 1.7;
   margin: 0;
+}
+
+/* ── Send, and it folds: the form folds into a square that ticks while sending,
+      shows a tick when the send lands, then the confirmation unfolds from it ── */
+.cp-fold {
+  position: relative;
+  width: 100%;
+}
+
+.cp-fold-content {
+  transition: opacity 260ms ease;
+}
+
+.cp-fold:not(.is-idle) .cp-fold-content {
+  opacity: 0;
+}
+
+.cp-fold-sheet,
+.cp-fold .cp-success {
+  border-radius: 28px;
+  background: linear-gradient(160deg, #f4ecfa 0%, #e9dbf5 100%);
+  box-shadow: inset 0 0 0 1px rgba(141, 99, 184, 0.16);
+}
+
+.cp-fold-sheet {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  clip-path: inset(0 round 28px);
+  pointer-events: none;
+  /* Coming back to idle after a failed send: unfold to full size while fading away */
+  transition:
+    clip-path 600ms cubic-bezier(0.65, 0, 0.35, 1),
+    opacity 260ms ease 340ms;
+}
+
+.cp-fold.is-sending .cp-fold-sheet,
+.cp-fold.is-done .cp-fold-sheet,
+.cp-fold.is-sent .cp-fold-sheet {
+  opacity: 1;
+  clip-path: inset(calc(50% - 38px) calc(50% - 38px) round 22px);
+  transition: opacity 160ms ease;
+}
+
+.cp-fold.is-sending .cp-fold-sheet {
+  animation: cpFold 780ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+.cp-fold.is-sent .cp-fold-sheet {
+  opacity: 0;
+  transition: opacity 200ms ease 400ms;
+}
+
+/* Fold vertically into a strip first, then sideways into the square */
+@keyframes cpFold {
+  0% { clip-path: inset(0 round 28px); }
+  50% { clip-path: inset(calc(50% - 38px) 0 round 22px); }
+  100% { clip-path: inset(calc(50% - 38px) calc(50% - 38px) round 22px); }
+}
+
+.cp-fold-square {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 76px;
+  height: 76px;
+  margin: -38px 0 0 -38px;
+  display: grid;
+  place-items: center;
+  color: #6f4d91;
+}
+
+.cp-fold-square svg {
+  grid-area: 1 / 1;
+  width: 44px;
+  height: 44px;
+}
+
+.cp-fold-ticks {
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.cp-fold.is-sending .cp-fold-ticks {
+  opacity: 1;
+  transition-delay: 560ms;
+}
+
+.cp-fold-ticks line {
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  opacity: 0.18;
+}
+
+.cp-fold.is-sending .cp-fold-ticks line {
+  animation: cpTick 1200ms linear infinite;
+  animation-delay: calc(var(--i) * 100ms + 600ms);
+}
+
+@keyframes cpTick {
+  0%, 6% { opacity: 1; }
+  40%, 100% { opacity: 0.18; }
+}
+
+.cp-fold-check path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 28;
+  stroke-dashoffset: 28;
+}
+
+.cp-fold.is-done .cp-fold-check path,
+.cp-fold.is-sent .cp-fold-check path {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 420ms cubic-bezier(0.65, 0, 0.35, 1) 80ms;
+}
+
+.cp-fold-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Confirmation opens out of the square: sideways first, then to full height */
+.cp-fold .cp-success {
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  text-align: center;
+  animation: cpUnfold 760ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+.cp-fold .cp-success > * {
+  animation: cpFadeUp 420ms ease 460ms both;
+}
+
+@keyframes cpUnfold {
+  0% { clip-path: inset(calc(50% - 38px) calc(50% - 38px) round 22px); }
+  50% { clip-path: inset(calc(50% - 38px) 0 round 22px); }
+  100% { clip-path: inset(0 round 28px); }
+}
+
+@keyframes cpFadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cp-fold.is-sending .cp-fold-sheet,
+  .cp-fold .cp-success,
+  .cp-fold .cp-success > * {
+    animation: none;
+  }
+
+  .cp-fold-sheet {
+    transition: opacity 200ms ease;
+  }
 }
 
 /* ── Contact page responsive ── */

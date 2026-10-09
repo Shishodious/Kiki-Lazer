@@ -50,23 +50,38 @@ export default function Gallery() {
           </div>
 
           <div className="testimonials-track">
-            {testimonials.map((item, index) => (
-              <article
-                key={`${item.name}-${index}`}
-                className={`testimonial-card${index === active ? " is-active" : ""}`}
-                aria-hidden={index !== active}
-              >
-                <div className="testimonial-meta">
-                  <span className="testimonial-index">0{index + 1}</span>
-                  <span className="testimonial-stars">{"★".repeat(Math.max(1, item.rating || 5))}</span>
-                </div>
-                <p className="testimonial-quote">&ldquo;{item.quote}&rdquo;</p>
-                <div className="testimonial-author">
-                  <strong>{item.name}</strong>
-                  <span>{item.detail}</span>
-                </div>
-              </article>
-            ))}
+            {testimonials.map((item, index) => {
+              // Collapsing stack: the front card is open, the next two peek out as slivers above it,
+              // and the one just passed folds down out of view.
+              const offset = (index - active + testimonials.length) % testimonials.length;
+              const leaving = testimonials.length > 3 && offset === testimonials.length - 1;
+              const peeking = offset === 1 || offset === 2;
+              const stateClass =
+                offset === 0 ? " is-active" : leaving ? " is-leaving" : peeking ? " is-peeking" : " is-hidden";
+
+              return (
+                <article
+                  key={`${item.name}-${index}`}
+                  className={`testimonial-card${stateClass}`}
+                  style={{
+                    "--depth": leaving ? 0 : Math.min(offset, 3),
+                    zIndex: leaving ? testimonials.length + 1 : testimonials.length - offset,
+                  }}
+                  aria-hidden={offset !== 0}
+                  onClick={peeking ? () => goTo(index) : undefined}
+                >
+                  <div className="testimonial-meta">
+                    <span className="testimonial-index">0{index + 1}</span>
+                    <span className="testimonial-stars">{"★".repeat(Math.max(1, item.rating || 5))}</span>
+                  </div>
+                  <p className="testimonial-quote">&ldquo;{item.quote}&rdquo;</p>
+                  <div className="testimonial-author">
+                    <strong>{item.name}</strong>
+                    <span>{item.detail}</span>
+                  </div>
+                </article>
+              );
+            })}
           </div>
 
           <div className="carousel-controls">
